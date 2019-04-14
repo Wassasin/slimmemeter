@@ -73,13 +73,10 @@ fn main() {
     let reader = dsmr5::Reader::new(port.bytes().map(|b| b.unwrap()));
 
     for readout in reader {
-        // Will block until exporter receives http request.
         request_receiver.recv().unwrap();
 
         let telegram = readout.to_telegram().unwrap();
         let state = dsmr5::Result::<dsmr5::state::State>::from(&telegram).unwrap();
-
-        println!("{:?}", state);
 
         power_delivered.set(state.power_delivered.unwrap());
         power_received.set(state.power_received.unwrap());
