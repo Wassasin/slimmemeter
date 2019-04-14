@@ -1,4 +1,4 @@
-#slimmemeter
+# slimmemeter
 Quick and dirty DSMR5 serial TTY to Prometheus exporter for your smart meter.
 
 Will open a listening socket for the HTTP endpoints on `:9185`, and emit some default metrics for my home.
