@@ -1,0 +1,11 @@
+[package]
+name = "slimmemeter"
+version = "0.1.0"
+authors = ["Wouter Geraedts <wouter@tweedegolf.com>"]
+edition = "2018"
+
+[dependencies]
+prometheus_exporter = "0.3.0"
+prometheus = "0.5"
+serial = "0.4.0"
+dsmr5 = "0.1.1"
