@@ -1,5 +1,5 @@
-use prometheus::{__register_gauge, opts, register_gauge, register_int_gauge};
-use prometheus_exporter::{FinishedUpdate, PrometheusExporter};
+use prometheus::{register_gauge, register_int_gauge};
+use prometheus_exporter;
 use std::env;
 use std::net::SocketAddr;
 
@@ -10,7 +10,9 @@ fn main() {
         .skip(1)
         .next()
         .expect("Please specify the serial TTY path");
-    let mut port = serial::open(&path).unwrap();
+
+    let mut port = serial::open(&path)
+        .expect("Could not open serial TTY path");
 
     port.reconfigure(&|settings| {
         settings.set_baud_rate(serial::Baud115200)?;
@@ -26,21 +28,28 @@ fn main() {
         .unwrap();
 
     let addr_raw = "0.0.0.0:9185";
-    let addr: SocketAddr = addr_raw.parse().expect("Can not parse listen addr");
+    let addr: SocketAddr = addr_raw.parse()
+        .expect("Can not parse listen addr");
 
-    let (request_receiver, finished_sender) =
-        PrometheusExporter::run_and_repeat(addr, std::time::Duration::from_millis(10));
+    let exporter = prometheus_exporter::start(addr)
+        .expect("Could not start the prometheus exporter");
 
     let power_delivered = register_gauge!(
         "power_delivered",
         "Power delivered in the last second (kWs)"
-    )
+    ).unwrap();
+    let power_received = register_gauge!(
+        "power_received",
+        "Power generated in the last second (kWs)"
+    ).unwrap();
+    let power_failures = register_int_gauge!(
+        "power_failures",
+        "Number of power failures")
     .unwrap();
-    let power_received =
-        register_gauge!("power_received", "Power generated in the last second (kWs)").unwrap();
-    let power_failures = register_int_gauge!("power_failures", "Number of power failures").unwrap();
-    let long_power_failures =
-        register_int_gauge!("long_power_failures", "Number of long power failures").unwrap();
+    let long_power_failures = register_int_gauge!(
+        "long_power_failures",
+            "Number of long power failures"
+    ).unwrap();
     let meterreadings_tariff1_to = register_gauge!(
         "meterreadings_tariff1_to",
         "Total power consumed under tariff 1"
@@ -54,26 +63,39 @@ fn main() {
     let meterreadings_tariff1_by = register_gauge!(
         "meterreadings_tariff1_by",
         "Total power generated under tariff 1"
-    )
-    .unwrap();
+    ).unwrap();
     let meterreadings_tariff2_by = register_gauge!(
         "meterreadings_tariff2_by",
         "Total power generated under tariff 2"
-    )
-    .unwrap();
-
-    let voltage_sags = register_int_gauge!("voltage_sags", "Number of voltage sags").unwrap();
-    let voltage_swells = register_int_gauge!("voltage_swells", "Number of voltage swells").unwrap();
-    let voltage = register_gauge!("voltage", "Amount of voltage currently").unwrap();
-    let current = register_int_gauge!("current", "Amount of amperes currently").unwrap();
-
-    let gas_delivered = register_gauge!("gas_delivered", "Total gas delivered").unwrap();
+    ).unwrap();
+    let voltage_sags = register_int_gauge!(
+        "voltage_sags",
+        "Number of voltage sags"
+    ).unwrap();
+    let voltage_swells = register_int_gauge!(
+        "voltage_swells",
+        "Number of voltage swells"
+    ).unwrap();
+    let voltage = register_gauge!(
+        "voltage",
+        "Amount of voltage currently"
+    ).unwrap();
+    let current = register_int_gauge!(
+        "current",
+        "Amount of amperes currently"
+    ).unwrap();
+    let gas_delivered = register_gauge!(
+        "gas_delivered",
+        "Total gas delivered"
+    ).unwrap();    
 
     use std::io::Read;
-    let reader = dsmr5::Reader::new(port.bytes().map(|b| b.unwrap()));
+    let reader = dsmr5::Reader::new(
+        port.bytes().map(|b| b.unwrap())
+    );
 
     for readout in reader {
-        request_receiver.recv().unwrap();
+        let guard = exporter.wait_request();
 
         let telegram = readout.to_telegram().unwrap();
         let state = dsmr5::Result::<dsmr5::state::State>::from(&telegram).unwrap();
@@ -117,6 +139,8 @@ fn main() {
 
         // Notify exporter that all metrics have been updated so the caller client can
         // receive a response.
-        finished_sender.send(FinishedUpdate).unwrap();
+        drop(guard);
     }
+
+    eprintln!("Could not parse data from reader");
 }

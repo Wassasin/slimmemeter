@@ -5,7 +5,7 @@ authors = ["Wouter Geraedts <wouter@tweedegolf.com>"]
 edition = "2018"
 
 [dependencies]
-prometheus_exporter = "0.3.0"
-prometheus = "0.5"
-serial = "0.4.0"
+prometheus_exporter = "0.8"
+prometheus = "0.11"
+serial = "0.4"
 dsmr5 = "0.1.1"
