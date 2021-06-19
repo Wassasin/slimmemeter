@@ -1,11 +1,11 @@
 [package]
 name = "slimmemeter"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Wouter Geraedts <wouter@tweedegolf.com>"]
 edition = "2018"
 
 [dependencies]
 prometheus_exporter = "0.8"
-prometheus = "0.11"
+prometheus = "0.12"
 serial = "0.4"
-dsmr5 = "0.1.1"
+dsmr5 = "0.1"
