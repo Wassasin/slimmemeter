@@ -13,3 +13,9 @@ using a Raspberry Pi or similar. Then run using `./slimmemeter /dev/ttyUSB0`, or
 
 DSMR5 smart meters invert the TX-pin, thus you might need to configure your serial interface (like FTDI) to adapt to this.
 You can also invert the signal yourself using a transistor, but that is a bit fiddly.
+
+## Cross compile (for ARM v6)
+```
+cargo install cross
+cross build --target arm-unknown-linux-gnueabihf
+```
