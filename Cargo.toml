@@ -1,6 +1,6 @@
 [package]
 name = "slimmemeter"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Wouter Geraedts <git@woutergeraedts.nl>"]
 edition = "2021"
 description = "DSMR5 serial TTY to MQTT exporter for your smart meter"
@@ -21,4 +21,3 @@ dsmr5 = "0.2"
 
 tokio = { version = "1.22", features = ["full"] }
 rumqttc = { version = "0.18", features = ["url"] }
-influxdb = "0.5"
