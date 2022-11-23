@@ -1,8 +1,14 @@
 [package]
 name = "slimmemeter"
 version = "0.2.0"
-authors = ["Wouter Geraedts <wouter@tweedegolf.com>"]
+authors = ["Wouter Geraedts <git@woutergeraedts.nl>"]
 edition = "2021"
+description = "DSMR5 serial TTY to MQTT exporter for your smart meter"
+homepage = "https://github.com/Wassasin/slimmemeter"
+repository = "https://github.com/Wassasin/slimmemeter"
+license = "MIT"
+keywords = ["power", "meter", "dutch", "mqtt", "cli"]
+categories = ["command-line-utilities", "parser-implementations"]
 
 [dependencies]
 env_logger = "0.9"
