@@ -1,11 +1,18 @@
 [package]
 name = "slimmemeter"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Wouter Geraedts <wouter@tweedegolf.com>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
-prometheus_exporter = "0.8"
-prometheus = "0.12"
+env_logger = "0.9"
+log = "0.4"
+clap = { version = "3.0", features = ["derive"] }
+
+serde_json = "1.0"
 serial = "0.4"
-dsmr5 = "0.1"
+dsmr5 = "0.2"
+
+tokio = { version = "1.20", features = ["full"] }
+rumqttc = { version = "0.15", features = ["url"] }
+influxdb = "0.5"
